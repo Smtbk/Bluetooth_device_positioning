@@ -8,6 +8,8 @@ package com.example.test10;
         import android.content.Context;
         import android.content.pm.PackageManager;
         import android.os.Bundle;
+        import android.os.Environment;
+        import android.util.Log;
         import android.view.View;
         import android.widget.ArrayAdapter;
         import android.widget.Button;
@@ -17,6 +19,11 @@ package com.example.test10;
         import android.widget.Switch;
         import android.widget.TextView;
         import android.widget.Toast;
+
+        import java.io.BufferedWriter;
+        import java.io.File;
+        import java.io.FileWriter;
+        import java.io.IOException;
         import java.util.ArrayList;
         import java.util.List;
 
@@ -25,9 +32,10 @@ package com.example.test10;
 public class MainActivity extends AppCompatActivity {
 
 
+    public static int onn;
     private Button but1;
     TextView message1;
-    private BluetoothAdapter BTAdapter = BluetoothAdapter.getDefaultAdapter();
+    public static BluetoothAdapter BTAdapter = BluetoothAdapter.getDefaultAdapter();
     ListView list;
     private ImageView on;
     private ImageView off;
@@ -47,6 +55,9 @@ public class MainActivity extends AppCompatActivity {
     int fd = 0;
     int clicking = 0;
     Button settingButton;
+    final String LOG_TAG = "myLogs";
+    final String FILENAME_SD = "fileSD.txt";
+
 
 
 
@@ -79,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, Short.MIN_VALUE);
                 if (device.getAddress().equals(white)){
-                    mList.add("______WHITE______" + "\nMAC: " + device.getAddress() + "\nRSSI: "
+                    mList.add("______PC______" + "\nMAC: " + device.getAddress() + "\nRSSI: "
                             + intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, Short.MIN_VALUE));
                 } else if (device.getAddress().equals(green)) {
                     mList.add("______GREEN______" + "\nMAC: " + device.getAddress() + "\nRSSI: "
@@ -94,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
                 if (device.getAddress().equals(white)){
                     fd++;
                     if (RSSI < intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, Short.MIN_VALUE)) {
-                        message1.setText("Вы рядом с белым маячком!");
+                        message1.setText("Вы рядом с ПК!");
                         RSSI = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, Short.MIN_VALUE);
                     }
                     if (fd == 1) net_mess = device.getAddress()+ "   " + RSSI + "; ";
@@ -153,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
         mList = new ArrayList<>();
         mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mList);
         list.setAdapter(mAdapter);
-        white = "FC:58:FA:56:70:D2";
+        white = "74:40:BB:D1:72:20";
         green = "FC:58:FA:B4:4E:31";
         power = findViewById(R.id.progressBar);
         settingButton = findViewById(R.id.settingButton);
@@ -313,4 +324,15 @@ public class MainActivity extends AppCompatActivity {
                 return;
         }
     }
+
+    public void start_fon(View view) {
+        onn = 1;
+        startService(new Intent(MainActivity.this, Fone.class));
+    }
+
+    public void finish_fon(View view) {
+        onn = 0;
+        stopService(new Intent(MainActivity.this, Fone.class));
+    }
+
 }
